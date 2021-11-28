@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basics of Socket.io</title>
+</head>
+<body>
+    <h2>Basic Chat with Socket.io</h2>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.0/socket.io.min.js"></script>
+<script>
+    const socket = io("http://localhost:5000")
+
+    socket.on("connect", () => {
+
+        console.log(socket)
+        socket.on("welcome", data => {
+            console.log(data)
+        })
+        socket.send({data: "Hello World"})
+
+    })
+</script>
+</html>
