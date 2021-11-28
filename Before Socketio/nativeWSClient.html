@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Native Web Socket</title>
+</head>
+<body>
+    <h1>Native Web socket Demo</h1>
+    <button id="btn-connect">Connect</button>
+    <p>Enter a message to send and get confirmation:</p>
+    <input type="text" id="msg" />
+    <button id="btn-send" disabled>Send</button>
+    <button id="btn-close" disabled>Close</button>
+    <div id="content"></div>
+</body>
+<script>
+    
+    document.getElementById("btn-connect").onclick = (evt) => {
+
+        let ws = new WebSocket("ws://localhost:5000")
+        let closeBtn = document.getElementById("btn-close")
+        ws.onopen = event => {
+            document.getElementById("btn-connect").disabled = true
+            document.getElementById("btn-send").disabled = false
+            closeBtn.disabled = false
+            closeBtn.onclick = event => {
+                ws.close()
+                event.target.disabled = true
+            }
+        }
+        ws.onclose = event => {
+            document.getElementById("btn-connect").disabled = false
+            document.getElementById("btn-send").disabled = true
+            // closeBtn.disabled = true
+        }
+        ws.onmessage =  msg => {
+            console.log(msg.data)
+            document.getElementById("content").innerHTML += `<p>${msg.data}</p>`
+        }
+
+        let sendBtn = document.getElementById("btn-send")
+        let msgInput = document.getElementById("msg")
+
+        sendBtn.onclick = (event) => {
+            ws.send(msgInput.value)
+            msgInput.value = ""
+        }
+
+    }
+</script>
+</html>
