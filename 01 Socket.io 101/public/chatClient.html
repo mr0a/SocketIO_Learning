@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.io</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Socket.io Chat</h1>
+    <button id="btn-connect">Connect</button>
+    <p>Enter a message to send and get confirmation:</p>
+    <input type="text" id="msg" />
+    <button id="btn-send" disabled>Send</button>
+    <button id="btn-close" disabled>Close</button>
+    <div id="content"></div>
+</body>
+<script>
+    
+    document.getElementById("btn-connect").onclick = (evt) => {
+
+        let socket = io()
+        let closeBtn = document.getElementById("btn-close")
+        socket.on("connect", () => {
+            console.log(socket)
+            socket.emit("connectionMsg", {data: "This is client"})
+            document.getElementById("btn-connect").disabled = true
+            document.getElementById("btn-send").disabled = false
+            closeBtn.disabled = false
+            closeBtn.onclick = event => {
+                socket.disconnect()
+                console.log(socket)
+                event.target.disabled = true
+            }
+        })
+        socket.on("disconnect", event => {
+            document.getElementById("btn-connect").disabled = false
+            document.getElementById("btn-send").disabled = true
+            // closeBtn.disabled = true
+        })
+        socket.on("messageFromServer", msg => {
+            console.log(msg.data)
+            document.getElementById("content").innerHTML += `<p>${msg.data}</p>`
+        })
+
+        let sendBtn = document.getElementById("btn-send")
+        let msgInput = document.getElementById("msg")
+
+        sendBtn.onclick = (event) => {
+            socket.emit("messageToServer", {data: msgInput.value})
+            msgInput.value = ""
+        }
+
+    }
+</script>
+</html>
